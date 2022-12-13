@@ -1,81 +1,65 @@
-<?php include 'php/update.php'; ?>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>UPDATE</title>
+<?php
 
-    <!-- Font Icon -->
-    <link rel="stylesheet" href="fonts/material-icon/css/material-design-iconic-font.min.css">
+if (isset($_GET['id'])){
+    include "db_conn.php";
 
-    <!-- Main css -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-	<div class="container">
-        <form action="php/update.php" 
-              method="post">
-		   <h1><center>UPDATE</ceter></h1><br>
-		  
-           <?php if (isset($_GET['error'])) { ?>
-                <p class="error"><?php echo $_GET['error']; ?></p>
-            <?php } ?>
-		   <div class="form-group">
-		     <label for="billername"><i class="zmdi zmdi-lock"></i></label>
-		     <input type="text" 
-		           class="form-control" 
-		           id="billername" 
-		           name="billername" 
-                           value="<?=$row['billername'] ?>" >
-		   </div>
-           <div class="form-group">
-		     <label for="amount"><i class="zmdi zmdi-lock"></i></label>
-		     <input type="amount" 
-		           class="form-control" 
-		           id="amount" 
-		           name="amount" 
-                           value="<?=$row['amount'] ?>" >
-		   </div>
-           <div class="form-group">
-                    <center><label for="billtype">Select Bill Type:</label>
-                            <select class="form-select"
-                                    name="billtype"
-                                    aria-label="Default select example">
-                            <option selected value="subscription">Subscription</option>
-                            <option value="utility">Utility</option>
-                    </select>
-                    </center>
-            </div>
-            <div class="form-group">
-            <center><label for="duedate"><i class="zmdi zmdi-lock"></i></label>
-                    <input type="date" 
-		           class="form-control" 
-		           id="duedate" 
-		           name="duedate">
-                    </center>
-            </div>
-            <div class="form-group">
-		     <label for="remarks"><i class="zmdi zmdi-lock"></i></label>
-		     <input type="text" 
-		           class="form-control" 
-		           id="remarks" 
-		           name="remarks" 
-                   value="<?=$row['remarks'] ?>" >
-		   </div>
-           <input type="text" 
-                  name="id"
-                  value="<?=$row['id'] ?>"
-                  hidden >
-           <div class="form-group form-button">
-            <input type="submit" 
-                    name="update"
-                    id="update" 
-                    class="form-submit" value="Update"/><a href ="read.php" class ="link-primary">View</a>
-                    </div>
+    function validate($data){
+        $data= trim($data);
+        $data= stripslashes($data);
+        $data= htmlspecialchars($data);
+        return $data;
+        }
+    
 
-	    </form>
-	</div>
-</body>
-</html>
+    $id = validate($_GET['id']);
+
+    $sql = "SELECT * FROM billers WHERE id=$id";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+    }else {
+        header("Location: read.php");
+    }
+
+}else if(isset($_POST['update'])){
+    include "../db_conn.php";
+    function validate($data){
+        $data= trim($data);
+        $data= stripslashes($data);
+        $data= htmlspecialchars($data);
+        return $data;
+        }
+    
+
+    $billername = validate($_POST['billername']);
+    $amount = validate($_POST['amount']);
+    $billtype = validate($_POST['billtype']);
+    $duedate = validate($_POST['duedate']);
+    $remarks = validate($_POST['remarks']);
+    $id = validate($_POST['id']);
+
+
+    if (empty($billername)) {
+        header ("Location: ../update.php?id=$id&error=Biller name is required");
+    }else if (empty($amount)) {
+        header ("Location: ../update.php?id=$id&error=Amount is required");
+    }else if (empty($duedate)) {
+        header ("Location: ../update.php?id=$id&error=Due date is required");
+    } else {
+
+        $sql2 = "UPDATE billers
+                 SET billername='$billername', amount='$amount', billtype='$billtype', duedate='$duedate', remarks='$remarks'
+                 WHERE id=$id";
+        
+        $result = mysqli_query($conn, $sql2);
+        if ($result) {
+            header("Location: ../read.php?success=successfully updated");
+        }else {
+            header("Location: ../update.php?id=$id&error=unknown error occurred&$user_data");
+
+        }
+    }
+}else {
+    header("Location: read.php");
+}
