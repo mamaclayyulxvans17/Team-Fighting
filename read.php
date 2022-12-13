@@ -7,17 +7,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
-
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	
+	<script src="https://code.jquery.com/jquery-1.11.1.min.js"><script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="css/style1.css">
-
+	<script> 
+		$(document).ready(function(){
+			$("#myInput").on("keyup",function(){
+				var value =$(this).val().toLowerCase();
+				$("#myTable tr").filter(function(){
+					$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+				});
+			});
+		});
+	</script>
 	</head>
 	<body>
-	
+					<br><br><br>
 		            <center><h3>MY BILLS</h3></center>
+					<br>
                     <center> <div class="navBar">
                         <button type="button" class="btn btn-outline-primary"><a href="index1.php">+Add Biller</a></button>
+						<input type="text" id="myInput" placeholder="search here">
                         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Filter
                         <span class="caret"></span></button>
                         <ul class="dropdown-menu">
@@ -29,7 +40,14 @@
                     </center>
                 </div>
             </div>
-
+			<style>
+				body {
+  					background-image: url("images/bg_4.jpg");
+  					background-repeat: no-repeat;
+  					background-attachment: fixed;  
+  					background-size: cover;
+					}
+			</style>
             <div class="container">
 		<div class="box">
 			<?php if (isset($_GET['success'])) { ?>
@@ -50,7 +68,7 @@
                   <th scope="col">Actions</th>
 			    </tr>
 			  </thead>
-			  <tbody>
+			  <tbody id="myTable">
 			  	<?php 
 			  	   $i = 0;
 			  	   while($rows = mysqli_fetch_assoc($result)){
